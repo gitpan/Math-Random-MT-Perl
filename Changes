@@ -1,0 +1,6 @@
+Revision history for Perl extension Math::Random::MT::Perl.
+
+0.01  Tue May 20 17:03:16 2008
+    - original version; created by h2xs 1.23 with options
+        -AX Math::Random::MT::Perl
+

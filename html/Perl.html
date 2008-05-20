@@ -1,0 +1,135 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Perl.pm</title>
+<link rel="stylesheet" href="../html/docs.css" type="text/css" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:" />
+</head>
+
+<body>
+<table border="0" width="100%" cellspacing="0" cellpadding="3">
+<tr><td class="block" valign="middle">
+<big><strong><span class="block">&nbsp;Perl.pm</span></strong></big>
+</td></tr>
+</table>
+
+
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+        <li><a href="#functions">Functions</a></li>
+        <li><a href="#export">EXPORT</a></li>
+    </ul>
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    <li><a href="#author">AUTHOR</a></li>
+    <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+</ul>
+
+<hr name="index" />
+</div>
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>Math::Random::MT::Perl - Pure Perl Pseudorandom Number Generator</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ <span class="keyword">use</span> <span class="variable">Math::Random::MT::Perl</span><span class="operator">;</span>
+</pre>
+<pre>
+ <span class="variable">$gen</span> <span class="operator">=</span> <span class="variable">Math::Random::MT::Perl</span><span class="operator">-&gt;</span><span class="variable">new</span><span class="operator">(</span><span class="variable">$seed</span><span class="operator">);</span>
+ <span class="keyword">print</span> <span class="variable">$gen</span><span class="operator">-&gt;</span><span class="keyword">rand</span><span class="operator">(</span><span class="number">3</span><span class="operator">);</span>
+</pre>
+<pre>
+ OR</pre>
+<pre>
+ <span class="keyword">use</span> <span class="variable">Math::Random::MT</span> <span class="string">qw(srand rand)</span><span class="operator">;</span>
+</pre>
+<pre>
+ <span class="comment"># now srand and rand behave as usual.</span>
+</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Pure Perl implementation of the Mersenne Twister algorithm as implemented in
+Math::Random::MT. The Mersenne Twister is a pseudorandom number generator
+developed by Makoto Matsumoto and Takuji Nishimura.</p>
+<p>This module implements two interfaces, as described in the synopsis
+above. It defines the following functions.</p>
+<p>
+</p>
+<h2><a name="functions">Functions</a></h2>
+<dl>
+<dt><strong><a name="new" class="item"><code>new($seed)</code></a></strong>
+
+<dd>
+<p>Creates a new generator seeded with an unsigned 32-bit integer.</p>
+</dd>
+</li>
+<dt><strong><a name="rand" class="item"><code>rand($num)</code></a></strong>
+
+<dd>
+<p>Can be called via the OO in interface or exported. Behaves exactly like
+Perl's builtin <a href="#item_rand"><code>rand()</code></a>, returning a number uniformly distributed in [0, $num)
+($num defaults to 1) except the underlying complexity is 32 bits rather than
+some small fraction of this.</p>
+</dd>
+</li>
+<dt><strong><a name="srand" class="item"><code>srand($seed)</code></a></strong>
+
+<dd>
+<p>Behaves just like Perl's builtin <a href="#item_srand"><code>srand()</code></a>. If you use this interface, it
+is strongly recommended that you call <em>srand()</em> explicitly, rather than
+relying on <em>rand()</em> to call it the first time it is used. Has no effect if
+called via OO interface - pass the seed to new.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<h2><a name="export">EXPORT</a></h2>
+<p>None by default. <a href="#item_rand"><code>rand()</code></a> and <a href="#item_srand"><code>srand()</code></a> on demand.</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>Math::Random::MT</p>
+<p>&lt;URL:http://www.math.keio.ac.jp/~matumoto/emt.html&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Dr James Freeman &lt;<a href="mailto:airmedical@gmail.com">airmedical@gmail.com</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2008 by Dr James Freeman</p>
+<p>This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.</p>
+<table border="0" width="100%" cellspacing="0" cellpadding="3">
+<tr><td class="block" valign="middle">
+<big><strong><span class="block">&nbsp;Perl.pm</span></strong></big>
+</td></tr>
+</table>
+
+</body>
+
+</html>

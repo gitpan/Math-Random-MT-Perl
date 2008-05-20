@@ -1,0 +1,13 @@
+MANIFEST
+Changes
+Makefile.PL
+README
+misc/make_manifest.pl
+t/1.t
+t/2.t
+t/3.t
+t/4.t
+t/5.skip
+lib/Math/Random/MT/Perl.pm
+html/docs.css
+html/Perl.html
