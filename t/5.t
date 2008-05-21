@@ -4,7 +4,7 @@ use Test;
 use vars qw($loaded);
 use Benchmark qw(timediff timestr);
 
-BEGIN { plan tests => 3 }
+BEGIN { plan tests => 5 }
 END   { print "not ok 1\n" unless $loaded }
 
 # Check that we can use an array to seed the generator.
@@ -15,3 +15,10 @@ my $gen;
 ok($loaded = 1);
 ok( $gen = Math::Random::MT::Perl->new(1, 2, 3, 4) );
 ok( $gen->rand(1), 0.67886575916782 );
+
+# high value seeds broke initial implementation of mt_setup_array()
+ok( $gen = Math::Random::MT::Perl->new(1, 2, 3, 2**31) );
+ok( $gen->rand(1), 0.336814725538716 );
+
+
+

@@ -7,7 +7,8 @@ t/1.t
 t/2.t
 t/3.t
 t/4.t
-t/5.skip
+t/5.t
+t/validate.pl
 lib/Math/Random/MT/Perl.pm
 html/docs.css
 html/Perl.html

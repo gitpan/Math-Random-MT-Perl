@@ -1,6 +1,13 @@
 Revision history for Perl extension Math::Random::MT::Perl.
 
-0.01  Tue May 20 17:03:16 2008
+1.00  Tue May 20 17:03:16 2008
     - original version; created by h2xs 1.23 with options
         -AX Math::Random::MT::Perl
+
+1.01  Thur May 22
+    - implemented array of seeds to complete compatability with C version
+    - added script validate.pl to /t which "proves" output identical to C
+      where proves means produces the same output over > 10e8 runs
+    - added extra test to 5.t that demonstrated an issue with array laver
+
 

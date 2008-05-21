@@ -28,9 +28,10 @@
     <ul>
 
         <li><a href="#functions">Functions</a></li>
-        <li><a href="#export">EXPORT</a></li>
+        <li><a href="#export">Export</a></li>
     </ul>
 
+    <li><a href="#speed">SPEED</a></li>
     <li><a href="#see_also">SEE ALSO</a></li>
     <li><a href="#author">AUTHOR</a></li>
     <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
@@ -61,17 +62,18 @@
  <span class="keyword">use</span> <span class="variable">Math::Random::MT</span> <span class="string">qw(srand rand)</span><span class="operator">;</span>
 </pre>
 <pre>
- <span class="comment"># now srand and rand behave as usual.</span>
+ <span class="comment"># now srand and rand behave as usual, except with 32 bit precsision not ~15</span>
 </pre>
 <p>
 </p>
 <hr />
 <h1><a name="description">DESCRIPTION</a></h1>
 <p>Pure Perl implementation of the Mersenne Twister algorithm as implemented in
-Math::Random::MT. The Mersenne Twister is a pseudorandom number generator
-developed by Makoto Matsumoto and Takuji Nishimura.</p>
-<p>This module implements two interfaces, as described in the synopsis
-above. It defines the following functions.</p>
+C/XS in Math::Random::MT. The output is identical to the C/XS version. The
+Mersenne Twister is a 32 bit pseudorandom number generator developed by
+Makoto Matsumoto and Takuji Nishimura.</p>
+<p>This module implements the same two interfaces found in Math::Random::MT,
+as described in the synopsis above. It defines the following functions.</p>
 <p>
 </p>
 <h2><a name="functions">Functions</a></h2>
@@ -80,6 +82,12 @@ above. It defines the following functions.</p>
 
 <dd>
 <p>Creates a new generator seeded with an unsigned 32-bit integer.</p>
+</dd>
+</li>
+<dt><strong><code>new(@seed)</code></strong>
+
+<dd>
+<p>Creates a new generator seeded with an array of unsigned 32-bit integers.</p>
 </dd>
 </li>
 <dt><strong><a name="rand" class="item"><code>rand($num)</code></a></strong>
@@ -97,20 +105,27 @@ some small fraction of this.</p>
 <p>Behaves just like Perl's builtin <a href="#item_srand"><code>srand()</code></a>. If you use this interface, it
 is strongly recommended that you call <em>srand()</em> explicitly, rather than
 relying on <em>rand()</em> to call it the first time it is used. Has no effect if
-called via OO interface - pass the seed to new.</p>
+called via OO interface - pass the seed(s) to new.</p>
 </dd>
 </li>
 </dl>
 <p>
 </p>
-<h2><a name="export">EXPORT</a></h2>
-<p>None by default. <a href="#item_rand"><code>rand()</code></a> and <a href="#item_srand"><code>srand()</code></a> on demand.</p>
+<h2><a name="export">Export</a></h2>
+<p>Nothing by default. <a href="#item_rand"><code>rand()</code></a> and <a href="#item_srand"><code>srand()</code></a> on demand.</p>
+<p>
+</p>
+<hr />
+<h1><a name="speed">SPEED</a></h1>
+<p>Runs around 1/3-1/2 as fast as Math::Random::MT, however that still means a
+Benchmark random number generation speed of 100,000/sec on modest hardware,
+so this is unlikely to cause a significant bottleneck in most circumstances.</p>
 <p>
 </p>
 <hr />
 <h1><a name="see_also">SEE ALSO</a></h1>
 <p>Math::Random::MT</p>
-<p>&lt;URL:http://www.math.keio.ac.jp/~matumoto/emt.html&gt;</p>
+<p><a href="http://www.math.keio.ac.jp/~matumoto/emt.html">http://www.math.keio.ac.jp/~matumoto/emt.html</a></p>
 <p>
 </p>
 <hr />

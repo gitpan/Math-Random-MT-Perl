@@ -1,7 +1,8 @@
 package Math::Random::MT::Perl;
 
 use strict;
-our $VERSION = 1.00;
+#use warnings;
+our $VERSION = 1.01;
 
 my $N = 624;
 my $M = 397;
@@ -14,43 +15,72 @@ sub new {
     my ($class, @seeds) = @_;
     my $self = {};
     bless $self, $class;
-    $self->mt_init_seed($seeds[0]||time);
-    warn "Array of seeds not implemented in this module!\n" if @seeds > 1;
+    @seeds > 1 ? $self->mt_setup_array(@seeds) :
+                 $self->mt_init_seed($seeds[0]||time);
     return $self;
 }
 
 sub rand {
-    my ($self, $N) = @_;
+    my ($self, $range) = @_;
     if (ref $self) {
-        return ($N || 1) * $self->mt_genrand();
+        return ($range || 1) * $self->mt_genrand();
     }
     else {
-        $N = $self;
+        $range = $self;
         Math::Random::MT::Perl::srand() unless defined $gen;
-        return ($N || 1) * $gen->mt_genrand();
+        return ($range || 1) * $gen->mt_genrand();
     }
 }
 
 sub srand { $gen = Math::Random::MT::Perl->new(shift||time) }
 
+# Note that we need to use integer some of the time to force integer overflow
+# rollover ie 2**32+1 => 0. Unfortunately we really want uint but integer
+# casts to signed ints, thus we can't do everything within an integer block,
+# specifically the bitshift xor functions below
 sub mt_init_seed {
     my ($self, $seed) = @_;
     my @mt;
     $mt[0] = $seed & 0xffffffff;
     for ( my $i = 1; $i < $N; $i++ ) {
         my $xor = $mt[$i-1]^($mt[$i-1]>>30);
-        {   # hack to force required unsigned int overflow rollover
-            use integer;
-            $mt[$i] = sprintf "%u", 1812433253 * $xor + $i;
-        }
+        { use integer;  $mt[$i] = 1812433253 * $xor + $i; }
     }
     $self->{mt} = \@mt;
     $self->{mti} = $N;
 }
 
+sub mt_setup_array {
+    my ($self, @seeds) = @_;
+    $self->mt_init_seed( 19650218 );
+    my @mt = @{$self->{mt}};
+    my $i = 1;
+    my $j = 0;
+    my $n = @seeds;
+    my $k = $N > $n ? $N : $n;
+    my ($uint32, $xor);
+    for (; $k; $k--) {
+        $xor = $mt[$i-1] ^ ($mt[$i-1] >> 30);
+        { use integer; $uint32 = $xor * 1664525; }
+        $mt[$i] = ($mt[$i] ^ $uint32);
+        { use integer; $mt[$i] += $seeds[$j] + $j; }
+        $i++; $j++;
+        if ($i>=$N) { $mt[0] = $mt[$N-1]; $i=1; }
+        if ($j>=$n) { $j=0; }
+    }
+    for ($k=$N-1; $k; $k--) {
+        $xor = $mt[$i-1] ^ ($mt[$i-1] >> 30);
+        { use integer; $uint32 = $xor * 1566083941; }
+        $mt[$i] = ($mt[$i] ^ $uint32) - $i;
+        $i++;
+        if ($i>=$N) { $mt[0] = $mt[$N-1]; $i=1; }
+    }
+    $mt[0] = 0x80000000;
+    $self->{mt} = \@mt;
+}
+
 sub mt_genrand {
-    my ($self,$range) = @_;
-    $range ||= 1;
+    my ($self) = @_;
     my ($kk, $y);
     my @mag01 = (0x0, 0x9908b0df);
     if ($self->{mti} >= $N) {
@@ -71,7 +101,7 @@ sub mt_genrand {
     $y ^= ($y <<  7) & 0x9d2c5680;
     $y ^= ($y << 15) & 0xefc60000;
     $y ^= $y >> 18;
-    return $range*$y*(1.0/4294967296.0);
+    return $y*(1.0/4294967296.0);
 }
 
 sub import {
@@ -101,16 +131,17 @@ Math::Random::MT::Perl - Pure Perl Pseudorandom Number Generator
 
  use Math::Random::MT qw(srand rand);
 
- # now srand and rand behave as usual.
+ # now srand and rand behave as usual, except with 32 bit precsision not ~15
 
 =head1 DESCRIPTION
 
 Pure Perl implementation of the Mersenne Twister algorithm as implemented in
-Math::Random::MT. The Mersenne Twister is a pseudorandom number generator
-developed by Makoto Matsumoto and Takuji Nishimura.
+C/XS in Math::Random::MT. The output is identical to the C/XS version. The
+Mersenne Twister is a 32 bit pseudorandom number generator developed by
+Makoto Matsumoto and Takuji Nishimura.
 
-This module implements two interfaces, as described in the synopsis
-above. It defines the following functions.
+This module implements the same two interfaces found in Math::Random::MT,
+as described in the synopsis above. It defines the following functions.
 
 =head2 Functions
 
@@ -119,6 +150,10 @@ above. It defines the following functions.
 =item new($seed)
 
 Creates a new generator seeded with an unsigned 32-bit integer.
+
+=item new(@seed)
+
+Creates a new generator seeded with an array of unsigned 32-bit integers.
 
 =item rand($num)
 
@@ -132,19 +167,25 @@ some small fraction of this.
 Behaves just like Perl's builtin srand(). If you use this interface, it
 is strongly recommended that you call I<srand()> explicitly, rather than
 relying on I<rand()> to call it the first time it is used. Has no effect if
-called via OO interface - pass the seed to new.
+called via OO interface - pass the seed(s) to new.
 
 =back
 
-=head2 EXPORT
+=head2 Export
 
-None by default. rand() and srand() on demand.
+Nothing by default. rand() and srand() on demand.
+
+=head1 SPEED
+
+Runs around 1/3-1/2 as fast as Math::Random::MT, however that still means a
+Benchmark random number generation speed of 100,000/sec on modest hardware,
+so this is unlikely to cause a significant bottleneck in most circumstances.
 
 =head1 SEE ALSO
 
 Math::Random::MT
 
-<URL:http://www.math.keio.ac.jp/~matumoto/emt.html>
+http://www.math.keio.ac.jp/~matumoto/emt.html
 
 =head1 AUTHOR
 
