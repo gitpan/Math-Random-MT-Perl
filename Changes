@@ -15,3 +15,12 @@ Revision history for Perl extension Math::Random::MT::Perl.
       32 bits on 64 bit systems. thanks to almut from perlmonks for the
       testing and the solution.
 
+1.03 Sat May 24
+    - patched test files to limit floating point to 12 sig figures and avoid
+      spurious test failures on 64 bit systems which return longer floating
+      point numbers that 32 bit builds (18 digits vs 15).with underlying
+      integers from 0..2**32-1 there are actually only 10 sig figs.
+    - reversed the ok(expected,got) test format acquired from
+      Math::Random::MTto the correct ok(got,expected) order so the test
+      failures read correctly.
+
