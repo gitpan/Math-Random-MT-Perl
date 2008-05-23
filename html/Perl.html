@@ -34,6 +34,11 @@
     <li><a href="#speed">SPEED</a></li>
     <li><a href="#see_also">SEE ALSO</a></li>
     <li><a href="#author">AUTHOR</a></li>
+    <ul>
+
+        <li><a href="#credits">Credits</a></li>
+    </ul>
+
     <li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
 </ul>
 
@@ -71,7 +76,9 @@
 <p>Pure Perl implementation of the Mersenne Twister algorithm as implemented in
 C/XS in Math::Random::MT. The output is identical to the C/XS version. The
 Mersenne Twister is a 32 bit pseudorandom number generator developed by
-Makoto Matsumoto and Takuji Nishimura.</p>
+Makoto Matsumoto and Takuji Nishimura. The algorithm is characterised by
+a very uniform distribution but is not cryptographically secure. What this
+means in real terms is that it is fine for modelling but no good for crypto.</p>
 <p>This module implements the same two interfaces found in Math::Random::MT,
 as described in the synopsis above. It defines the following functions.</p>
 <p>
@@ -131,6 +138,12 @@ so this is unlikely to cause a significant bottleneck in most circumstances.</p>
 <hr />
 <h1><a name="author">AUTHOR</a></h1>
 <p>Dr James Freeman &lt;<a href="mailto:airmedical@gmail.com">airmedical@gmail.com</a>&gt;</p>
+<p>
+</p>
+<h2><a name="credits">Credits</a></h2>
+<p>almut from perlmonks for 64 bit debug and fix.</p>
+<p>Abhijit Menon-Sen, Philip Newton and Sean M. Burke who contributed to
+Math::Random::MT as this module is simply a translation.</p>
 <p>
 </p>
 <hr />

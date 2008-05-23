@@ -10,4 +10,8 @@ Revision history for Perl extension Math::Random::MT::Perl.
       where proves means produces the same output over > 10e8 runs
     - added extra test to 5.t that demonstrated an issue with array laver
 
+1.02 Fri May 23
+    - implemented & 0xffffffff where required to constrain integers to
+      32 bits on 64 bit systems. thanks to almut from perlmonks for the
+      testing and the solution.
 

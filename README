@@ -1,9 +1,11 @@
-Math-Random-MT-Perl version 1.00
+Math-Random-MT-Perl version 1.02
 ================================
 
 Pure Perl implementation of the Mersenne Twister algorithm as implemented in
 C/XS in Math::Random::MT. The Mersenne Twister is a 32 bit pseudorandom number
-generator developed by Makoto Matsumoto and Takuji Nishimura.
+generator developed by Makoto Matsumoto and Takuji Nishimura. It is
+characterised by a very uniform distribution but is not cryptographically
+secure.
 
 The interface is the same as that of Math::Random::MT. The output is identical
 to the C/XS version. The tests are straight out of Math::Random::MT and they

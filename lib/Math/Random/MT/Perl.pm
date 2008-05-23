@@ -2,7 +2,7 @@ package Math::Random::MT::Perl;
 
 use strict;
 #use warnings;
-our $VERSION = 1.01;
+our $VERSION = 1.02;
 
 my $N = 624;
 my $M = 397;
@@ -37,14 +37,15 @@ sub srand { $gen = Math::Random::MT::Perl->new(shift||time) }
 # Note that we need to use integer some of the time to force integer overflow
 # rollover ie 2**32+1 => 0. Unfortunately we really want uint but integer
 # casts to signed ints, thus we can't do everything within an integer block,
-# specifically the bitshift xor functions below
+# specifically the bitshift xor functions below. The & 0xffffffff is required
+# to constrain the integer to 32 bits on 64 bit systems.
 sub mt_init_seed {
     my ($self, $seed) = @_;
     my @mt;
     $mt[0] = $seed & 0xffffffff;
     for ( my $i = 1; $i < $N; $i++ ) {
         my $xor = $mt[$i-1]^($mt[$i-1]>>30);
-        { use integer;  $mt[$i] = 1812433253 * $xor + $i; }
+        { use integer;  $mt[$i] = (1812433253 * $xor + $i) & 0xffffffff }
     }
     $self->{mt} = \@mt;
     $self->{mti} = $N;
@@ -52,6 +53,7 @@ sub mt_init_seed {
 
 sub mt_setup_array {
     my ($self, @seeds) = @_;
+    @seeds = map{ $_ & 0xffffffff }@seeds;  # limit seeds to 32 bits
     $self->mt_init_seed( 19650218 );
     my @mt = @{$self->{mt}};
     my $i = 1;
@@ -61,16 +63,16 @@ sub mt_setup_array {
     my ($uint32, $xor);
     for (; $k; $k--) {
         $xor = $mt[$i-1] ^ ($mt[$i-1] >> 30);
-        { use integer; $uint32 = $xor * 1664525; }
+        { use integer; $uint32 = ($xor * 1664525) & 0xffffffff }
         $mt[$i] = ($mt[$i] ^ $uint32);
-        { use integer; $mt[$i] += $seeds[$j] + $j; }
+        { use integer; $mt[$i] = ($mt[$i] + $seeds[$j] + $j) & 0xffffffff }
         $i++; $j++;
         if ($i>=$N) { $mt[0] = $mt[$N-1]; $i=1; }
         if ($j>=$n) { $j=0; }
     }
     for ($k=$N-1; $k; $k--) {
         $xor = $mt[$i-1] ^ ($mt[$i-1] >> 30);
-        { use integer; $uint32 = $xor * 1566083941; }
+        { use integer; $uint32 = ($xor * 1566083941) & 0xffffffff }
         $mt[$i] = ($mt[$i] ^ $uint32) - $i;
         $i++;
         if ($i>=$N) { $mt[0] = $mt[$N-1]; $i=1; }
@@ -138,7 +140,9 @@ Math::Random::MT::Perl - Pure Perl Pseudorandom Number Generator
 Pure Perl implementation of the Mersenne Twister algorithm as implemented in
 C/XS in Math::Random::MT. The output is identical to the C/XS version. The
 Mersenne Twister is a 32 bit pseudorandom number generator developed by
-Makoto Matsumoto and Takuji Nishimura.
+Makoto Matsumoto and Takuji Nishimura. The algorithm is characterised by
+a very uniform distribution but is not cryptographically secure. What this
+means in real terms is that it is fine for modelling but no good for crypto.
 
 This module implements the same two interfaces found in Math::Random::MT,
 as described in the synopsis above. It defines the following functions.
@@ -190,6 +194,13 @@ http://www.math.keio.ac.jp/~matumoto/emt.html
 =head1 AUTHOR
 
 Dr James Freeman E<lt>airmedical@gmail.comE<gt>
+
+=head2 Credits
+
+almut from perlmonks for 64 bit debug and fix.
+
+Abhijit Menon-Sen, Philip Newton and Sean M. Burke who contributed to
+Math::Random::MT as this module is simply a translation.
 
 =head1 COPYRIGHT AND LICENSE
 

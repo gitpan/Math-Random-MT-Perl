@@ -2,6 +2,7 @@
 use Math::Random::MT;
 use Math::Random::MT::Perl;
 use strict;
+print "Using $Math::Random::MT::Perl::VERSION\n";
 
 #    C:\Math-Random-MT-Perl-1.01\t>validate.pl 10000 1000
 #    OK - single seed 10000 x 10000 tests: 100000000 total identical values
