@@ -24,3 +24,11 @@ Revision history for Perl extension Math::Random::MT::Perl.
       Math::Random::MTto the correct ok(got,expected) order so the test
       failures read correctly.
 
+1.04 Sat May 24
+    - are we there yet? apparently not. fix breakage on BSD with perl 5.005
+      where use of "our" is deprecated caused total failure.
+    - minor documentation fixes
+    - added benchmark.pl to validate.pl in /t for comparing performance to
+      Math::Random::MT. you can only run them if you can install both versions
+      and if you can do that you don't really need this module!
+

@@ -1,8 +1,8 @@
 package Math::Random::MT::Perl;
 
 use strict;
-#use warnings;
-our $VERSION = 1.03;
+use vars qw($VERSION);
+$VERSION = 1.04;
 
 my $N = 624;
 my $M = 397;
@@ -45,7 +45,7 @@ sub mt_init_seed {
     $mt[0] = $seed & 0xffffffff;
     for ( my $i = 1; $i < $N; $i++ ) {
         my $xor = $mt[$i-1]^($mt[$i-1]>>30);
-        { use integer;  $mt[$i] = (1812433253 * $xor + $i) & 0xffffffff }
+        { use integer; $mt[$i] = (1812433253 * $xor + $i) & 0xffffffff }
     }
     $self->{mt} = \@mt;
     $self->{mti} = $N;
@@ -120,20 +120,24 @@ __END__
 
 =head1 NAME
 
-Math::Random::MT::Perl - Pure Perl Pseudorandom Number Generator
+Math::Random::MT::Perl - Pure Perl Mersenne Twister Random Number Generator
 
 =head1 SYNOPSIS
 
- use Math::Random::MT::Perl;
+  use Math::Random::MT::Perl;
 
- $gen = Math::Random::MT::Perl->new($seed);
- print $gen->rand(3);
+  $gen = Math::Random::MT->new($seed); # OR...
+  $gen = Math::Random::MT->new(@seed);
 
- OR
+  print $gen->rand(42);         # random float 0.0 .. 41.99999999 inclusive
+  $dice = int(1+$gen->rand(6)); # random int between 1 and 6
+  print $gen->rand() < 0.5 ? "heads" : "tails"
 
- use Math::Random::MT qw(srand rand);
+  OR
 
- # now srand and rand behave as usual, except with 32 bit precsision not ~15
+  use Math::Random::MT qw(srand rand);
+
+  # now srand and rand behave as usual, except with 32 bit precsision not ~15
 
 =head1 DESCRIPTION
 
@@ -142,7 +146,16 @@ C/XS in Math::Random::MT. The output is identical to the C/XS version. The
 Mersenne Twister is a 32 bit pseudorandom number generator developed by
 Makoto Matsumoto and Takuji Nishimura. The algorithm is characterised by
 a very uniform distribution but is not cryptographically secure. What this
-means in real terms is that it is fine for modelling but no good for crypto.
+means in real terms is that it is fine for modeling but no good for crypto.
+
+Note: Internally unsigned 32 bit integers are used. The range of possible
+values for such integers is 0..4294967295 (0..2**32-1). The generator
+takes a random integer from within this range and multiplies it by
+(1.0/4294967296.0). As a result the range of possible return values is
+0 .. 0.999999999767169. This number is then multiplied by the argument passed
+to rand (default=1). In other words the maximum return value from rand will
+always be slightly less than the argument - it will never equal that argument.
+Only the first 10 digits of the returned float are mathematically significant.
 
 This module implements the same two interfaces found in Math::Random::MT,
 as described in the synopsis above. It defines the following functions.
@@ -181,9 +194,8 @@ Nothing by default. rand() and srand() on demand.
 
 =head1 SPEED
 
-Runs around 1/3-1/2 as fast as Math::Random::MT, however that still means a
-Benchmark random number generation speed of 100,000/sec on modest hardware,
-so this is unlikely to cause a significant bottleneck in most circumstances.
+Runs around 1/3 as fast as the C code of Math::Random::MT, however that still
+means a random number generation speed of 100,000/sec on modest hardware.
 
 =head1 SEE ALSO
 
