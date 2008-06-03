@@ -1,8 +1,9 @@
 package Math::Random::MT::Perl;
 
 use strict;
+use warnings;
 use vars qw($VERSION);
-$VERSION = 1.04;
+$VERSION = 1.05;
 
 my $N = 624;
 my $M = 397;
@@ -15,20 +16,20 @@ sub new {
     my ($class, @seeds) = @_;
     my $self = {};
     bless $self, $class;
-    @seeds > 1 ? $self->mt_setup_array(@seeds) :
-                 $self->mt_init_seed($seeds[0]||time);
+    @seeds > 1 ? $self->_mt_setup_array(@seeds) :
+                 $self->_mt_init_seed($seeds[0]||time);
     return $self;
 }
 
 sub rand {
     my ($self, $range) = @_;
     if (ref $self) {
-        return ($range || 1) * $self->mt_genrand();
+        return ($range || 1) * $self->_mt_genrand();
     }
     else {
         $range = $self;
         Math::Random::MT::Perl::srand() unless defined $gen;
-        return ($range || 1) * $gen->mt_genrand();
+        return ($range || 1) * $gen->_mt_genrand();
     }
 }
 
@@ -39,7 +40,7 @@ sub srand { $gen = Math::Random::MT::Perl->new(shift||time) }
 # casts to signed ints, thus we can't do everything within an integer block,
 # specifically the bitshift xor functions below. The & 0xffffffff is required
 # to constrain the integer to 32 bits on 64 bit systems.
-sub mt_init_seed {
+sub _mt_init_seed {
     my ($self, $seed) = @_;
     my @mt;
     $mt[0] = $seed & 0xffffffff;
@@ -51,10 +52,10 @@ sub mt_init_seed {
     $self->{mti} = $N;
 }
 
-sub mt_setup_array {
+sub _mt_setup_array {
     my ($self, @seeds) = @_;
     @seeds = map{ $_ & 0xffffffff }@seeds;  # limit seeds to 32 bits
-    $self->mt_init_seed( 19650218 );
+    $self->_mt_init_seed( 19650218 );
     my @mt = @{$self->{mt}};
     my $i = 1;
     my $j = 0;
@@ -81,7 +82,7 @@ sub mt_setup_array {
     $self->{mt} = \@mt;
 }
 
-sub mt_genrand {
+sub _mt_genrand {
     my ($self) = @_;
     my ($kk, $y);
     my @mag01 = (0x0, 0x9908b0df);
@@ -117,6 +118,10 @@ sub import {
 1;
 
 __END__
+
+=pod
+
+=for stopwords Abhijit Makoto Menon-Sen Mersenne Nishimura Takuji almut characterised crypto perlmonks pseudorandom gmail
 
 =head1 NAME
 
@@ -205,7 +210,8 @@ http://www.math.keio.ac.jp/~matumoto/emt.html
 
 =head1 AUTHOR
 
-Dr James Freeman E<lt>airmedical@gmail.comE<gt>
+(c) Dr James Freeman 2000-08 <airmedical [at] gmail [dot] com>
+All rights reserved.
 
 =head2 Credits
 
@@ -214,13 +220,11 @@ almut from perlmonks for 64 bit debug and fix.
 Abhijit Menon-Sen, Philip Newton and Sean M. Burke who contributed to
 Math::Random::MT as this module is simply a translation.
 
-=head1 COPYRIGHT AND LICENSE
+=head1 LICENSE
 
-Copyright (C) 2008 by Dr James Freeman
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.8 or,
-at your option, any later version of Perl 5 you may have available.
+This package is free software and is provided "as is" without express or
+implied warranty. It may be used, redistributed and/or modified under the
+terms of the Artistic License 2.0. A copy is include in this distribution.
 
 
 =cut

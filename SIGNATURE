@@ -1,0 +1,47 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.55.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 dbb2b995cbf4cccda43d702dd8c450681bca8ada Changes
+SHA1 cb75cd1bebfb5a0ff93a2b8bd22cf92cb2f0c6cf LICENSE
+SHA1 6e9768f35037090485d4abc89f4fb297bc6e0819 MANIFEST
+SHA1 3da93834ed3039d43416e82ac1c43c4c068b07b2 META.yml
+SHA1 e6e8f95a330c944405797ccf5486c7a34fdb8b36 Makefile.PL
+SHA1 81dcd26335c9b251d785eab4f9ce570e45be9d0d README
+SHA1 dbe232e7bb940d9aadcb9e73ab874ddbf17dc477 html/Perl.html
+SHA1 d90c797dc2c8eba2986207094b1ea8ec084008d9 html/docs.css
+SHA1 f557491d72393279e570f19f5cf1f995826551d9 lib/Math/Random/MT/Perl.pm
+SHA1 caeefb74df20ef182263a30796d1fe21826d43e2 misc/make_manifest.pl
+SHA1 74440f42d3c5784eb32b5f9dc60c9de277092796 misc/mkdist.bat
+SHA1 04bb0f296ffd10b669e3938c74049b3a86b17ecb t/1.t
+SHA1 9503910dc1fe8ca88a8f64ffe5b745b0abeefdce t/2.t
+SHA1 317ff880007574a1041721a2cbcb0e2688e50570 t/3.t
+SHA1 5691152cb428f6c6034ea5fe18340ce7d2e9e299 t/4.t
+SHA1 035fead05c850f0a0d2ee0d044d7390618c91dee t/5.t
+SHA1 35a75ae3d8b48ba47c672eeb1012d6847371c670 t/benchmark.pl
+SHA1 e025dfa24a881d66b0b2e4074d7dec859e14811e t/kwalitee.t
+SHA1 de530d00139c051ea70835b6376b24d929560a91 t/pod.t
+SHA1 0d686cdce4f8f187f8d22bf3c870dd405ab9fa60 t/pod_coverage.t
+SHA1 8f480b4bfd979034bfb414994a4eb689e5ff5b8f t/spelling.t
+SHA1 abc029ddb4823c915b332f3ea5fd7ad749095e64 t/validate.pl
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (MingW32)
+
+iJwEAQECAAYFAkhFPlAACgkQngy2BUOcVTMp1AP/SUshTqykkUQhLQXG4RQC2B4M
+3nSURkWUG7w+SHLZtyEQ0XUU6+6gt+g0atxyzznSJq+fdJ2S7tv1jP/iUB65nT2Z
+BwcluFvjJt8sA4uoxEaQwpFb5PsK4APXMz0CWVS8lAEI86ZdpMjDz4Fvo+37ArW6
+rej7GzhA1vR32MkI+2Y=
+=UCcK
+-----END PGP SIGNATURE-----

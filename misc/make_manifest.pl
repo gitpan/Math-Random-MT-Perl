@@ -1,28 +1,41 @@
 #!/usr/bin/perl -w
 
 # make_manifest.pl - get ready to tarball a module for CPAN
-# this script expects to be in the /misc dir. It makes really clean, writes
-# a /html dir from the .pm pod, writes an accurate manifest and then fixes
-# up all the line endings.
+# It makes really clean, writes  a /html dir from the .pm pod,
+# writes an accurate manifest and then fixes up all the line endings.
 
 use strict;
 use Pod::Html;
+use Cwd;
+
+chdir ".." if cwd =~ m/misc$/;
 
 my $backup = 0;
-my $root = shift @ARGV || '../';
+my $root = shift @ARGV || '.'; #'../;
 $root =~ tr|\\|/|;
 $root = "$root/" unless $root =~ m|/$|;
 
+write_file("SIGNATURE");
+write_file("META.yml");
 make_clean($root);
 my $htmldir = $root."html/";
 mkdir $htmldir, 0777;      # make the html dir
 unlink <$htmldir*>;        # make sure it is empty
 
+# write license file
+require Software::License::Artistic_2_0;
+unless ($@) {
+    my $license = Software::License::Artistic_2_0->new({holder => 'James Freeman',});
+    open F, ">../LICENSE" or die "Can't write LICENSE $!\n";
+    print F $license->fulltext;
+    close F;
+}
+
 my ( $dirs, $files ) = recurse_tree($root);
 my @files;
 # erase any undesirable files ie .bak, .pbp
 for (@$files) {
-    unlink, next if m/\.(?:pbp|bak)$/;
+    unlink, next if m/\.(?:pbp|bak|gz)$/;
     push @files, $_; # add files that we don't erase
 }
 
@@ -83,6 +96,7 @@ sub recurse_tree {
 # clean windows line ending away
 sub fix_line_endings {
     my $file = shift;
+    return if $file =~ m/.bat$/;
     local $/;
     open my $fh, "+<$file" or die "Can't open $file for R/W $!\n";
     binmode $fh;
