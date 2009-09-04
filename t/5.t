@@ -2,11 +2,11 @@ use strict;
 
 use Test;
 use vars qw($loaded);
-use Benchmark qw(timediff timestr);
 
 BEGIN { plan tests => 5 }
 END   { print "not ok 1\n" unless $loaded }
 
+# OO interface
 # Check that we can use an array to seed the generator.
 
 use Math::Random::MT::Perl;

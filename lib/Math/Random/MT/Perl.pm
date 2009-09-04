@@ -2,8 +2,10 @@ package Math::Random::MT::Perl;
 
 use strict;
 use warnings;
+use Time::HiRes qw(gettimeofday); # standard in Perl >= 5.8
+
 use vars qw($VERSION);
-$VERSION = 1.05;
+$VERSION = 1.06;
 
 my $N = 624;
 my $M = 397;
@@ -13,15 +15,17 @@ my $LOW_MASK = 0x7fffffff;
 my $gen = undef;
 
 sub new {
+    # Create a Math::Random::MT::Perl object
     my ($class, @seeds) = @_;
     my $self = {};
     bless $self, $class;
-    @seeds > 1 ? $self->_mt_setup_array(@seeds) :
-                 $self->_mt_init_seed($seeds[0]||time);
+    # Seed the random number generator
+    $self->set_seed(@seeds);
     return $self;
 }
 
 sub rand {
+    # Generate a random number
     my ($self, $range) = @_;
     if (ref $self) {
         return ($range || 1) * $self->_mt_genrand();
@@ -33,13 +37,56 @@ sub rand {
     }
 }
 
-sub srand { $gen = Math::Random::MT::Perl->new(shift||time) }
+sub get_seed {
+    # Get the seed
+    my ($self) = @_;
+    return $self->{seed};
+}
+
+sub set_seed {
+    # Set the seed
+    my ($self, @seeds) = @_;
+    $self->{mt} = undef;
+    $self->{mti} = undef;
+    $self->{seed} = undef;
+    @seeds > 1 ? $self->_mt_setup_array(@seeds) :
+                 $self->_mt_init_seed($seeds[0]||_rand_seed());
+    return 1;
+}
+
+sub srand {
+    # Seed the random number generator, automatically generating a seed if none
+    # is provided
+    my (@seeds) = @_;
+    if (not @seeds) {
+      $seeds[0] = _rand_seed();
+    }
+    $gen = Math::Random::MT::Perl->new(@seeds);
+    my $seed = $gen->get_seed;
+    return $seed;
+}
+
+sub _rand_seed {
+    # Create a random seed using Perl's builtin random number generator system
+    my ($self) = @_;
+    # 1/ Seed Perl's srand() with a temporary random seed that varies quickly
+    # in time so that no two identical seeds are obtained if several seeds are
+    # automatically generated in a short time interval
+    my $tmp_seed = (gettimeofday)[1]; # time in microseconds
+    CORE::srand($tmp_seed);
+    # 2/ Generate the random seed to use using Perl's builtin rand() (unsigned
+    # 32-bit integer)
+    my $max = int(2**32-1); # Largest unsigned 32-bit integer
+    my $rand_seed = int(CORE::rand($max+1)); # An integer between 0 and $max
+    return $rand_seed;
+}
 
 # Note that we need to use integer some of the time to force integer overflow
 # rollover ie 2**32+1 => 0. Unfortunately we really want uint but integer
 # casts to signed ints, thus we can't do everything within an integer block,
 # specifically the bitshift xor functions below. The & 0xffffffff is required
 # to constrain the integer to 32 bits on 64 bit systems.
+
 sub _mt_init_seed {
     my ($self, $seed) = @_;
     my @mt;
@@ -50,6 +97,7 @@ sub _mt_init_seed {
     }
     $self->{mt} = \@mt;
     $self->{mti} = $N;
+    $self->{seed} = ${$self->{mt}}[0];
 }
 
 sub _mt_setup_array {
@@ -80,6 +128,7 @@ sub _mt_setup_array {
     }
     $mt[0] = 0x80000000;
     $self->{mt} = \@mt;
+    $self->{seed} = ${$self->{mt}}[0];
 }
 
 sub _mt_genrand {
@@ -129,73 +178,92 @@ Math::Random::MT::Perl - Pure Perl Mersenne Twister Random Number Generator
 
 =head1 SYNOPSIS
 
+  ## Object-oriented interface:
   use Math::Random::MT::Perl;
+  $gen = Math::Random::MT->new()        # or...
+  $gen = Math::Random::MT->new($seed);  # or...
+  $gen = Math::Random::MT->new(@seeds);
+  $seed = $gen->get_seed();             # seed generating the random numbers
+  $rand = $gen->rand(42);               # random number in the interval [0, 42)
+  $dice = int($gen->rand(6)+1);         # random integer between 1 and 6
+  $coin = $gen->rand() < 0.5 ?          # flip a coin
+    "heads" : "tails"
 
-  $gen = Math::Random::MT->new($seed); # OR...
-  $gen = Math::Random::MT->new(@seed);
-
-  print $gen->rand(42);         # random float 0.0 .. 41.99999999 inclusive
-  $dice = int(1+$gen->rand(6)); # random int between 1 and 6
-  print $gen->rand() < 0.5 ? "heads" : "tails"
-
-  OR
-
+  ## Function-oriented interface
   use Math::Random::MT qw(srand rand);
-
-  # now srand and rand behave as usual, except with 32 bit precsision not ~15
+  $seed = srand();       # OR...
+  $seed = srand($seed);  # OR...
+  $seed = srand(@seeds);
+  # rand() behaves as usual in Perl, but is more precise
 
 =head1 DESCRIPTION
 
-Pure Perl implementation of the Mersenne Twister algorithm as implemented in
-C/XS in Math::Random::MT. The output is identical to the C/XS version. The
-Mersenne Twister is a 32 bit pseudorandom number generator developed by
-Makoto Matsumoto and Takuji Nishimura. The algorithm is characterised by
-a very uniform distribution but is not cryptographically secure. What this
-means in real terms is that it is fine for modeling but no good for crypto.
+Pure Perl implementation of the Mersenne Twister algorithm. Mersenne Twister is
+a 32 bit pseudorandom number generator developed by Makoto Matsumoto and Takuji
+Nishimura. The algorithm is characterised by a very uniform distribution but is
+not cryptographically secure. What this means in real terms is that it is fine
+for modeling but no good for crypto.
 
-Note: Internally unsigned 32 bit integers are used. The range of possible
-values for such integers is 0..4294967295 (0..2**32-1). The generator
-takes a random integer from within this range and multiplies it by
-(1.0/4294967296.0). As a result the range of possible return values is
-0 .. 0.999999999767169. This number is then multiplied by the argument passed
-to rand (default=1). In other words the maximum return value from rand will
-always be slightly less than the argument - it will never equal that argument.
-Only the first 10 digits of the returned float are mathematically significant.
+Internally, unsigned 32 bit integers are used. The range of possible values for
+such integers is 0 .. 4,294,967,295 (0..2**32-1). The generator takes a random
+integer from within this range and multiplies it by (1.0/4294967296.0). As a
+result the range of possible return values is 0 .. 0.999999999767169. This
+number is then multiplied by the argument passed to rand (default=1). In other
+words the maximum return value from rand will always be slightly less than the
+argument - it will never equal that argument. Only the first 10 digits of the
+returned float are mathematically significant.
 
-This module implements the same two interfaces found in Math::Random::MT,
-as described in the synopsis above. It defines the following functions.
+This module implements the same pseudorandom number generator found in
+Math::Random::MT (implemented in C/XS). Their output is identical but their
+interface may be slightly different.
 
-=head2 Functions
+=head2 Object-oriented functions
 
 =over
 
-=item new($seed)
+=item new()
 
-Creates a new generator seeded with an unsigned 32-bit integer.
-
-=item new(@seed)
-
-Creates a new generator seeded with an array of unsigned 32-bit integers.
+Creates a new generator. It can be provided with a single unsigned 32-bit
+integer, an array of them, or nothing. If no argument is passed, it is
+automatically seeded with a random seed.
 
 =item rand($num)
 
-Can be called via the OO in interface or exported. Behaves exactly like
-Perl's builtin rand(), returning a number uniformly distributed in [0, $num)
-($num defaults to 1) except the underlying complexity is 32 bits rather than
-some small fraction of this.
+Behaves exactly like Perl's builtin I<rand()>, returning a number uniformly
+distributed in [0, $num) ($num defaults to 1), except that the underlying
+complexity is 32 bits rather than a fraction of it (~15).
 
-=item srand($seed)
+=item set_seed()
 
-Behaves just like Perl's builtin srand(). If you use this interface, it
-is strongly recommended that you call I<srand()> explicitly, rather than
-relying on I<rand()> to call it the first time it is used. Has no effect if
-called via OO interface - pass the seed(s) to new.
+Seeds the generator. It takes the same arguments as I<new()>.
+
+=item get_seed()
+
+Retrieves the value of the seed used.
+
+=back
+
+=head2 Function-oriented functions
+
+=over
+
+=item srand()
+
+Seed the random number generator. It takes the same arguments as I<new()>, but
+returns the seed used. It is strongly recommended that you call I<srand()>
+explicitly before you call I<rand()> for the first time.
+
+=item rand($num)
+
+Behaves exactly like Perl's builtin I<rand()>, returning a number uniformly
+distributed in [0, $num) ($num defaults to 1), except that the underlying
+complexity is 32 bits rather than a fraction of it (~15).
 
 =back
 
 =head2 Export
 
-Nothing by default. rand() and srand() on demand.
+Nothing by default. I<rand()> and I<srand()> on demand.
 
 =head1 SPEED
 
@@ -218,13 +286,12 @@ All rights reserved.
 almut from perlmonks for 64 bit debug and fix.
 
 Abhijit Menon-Sen, Philip Newton and Sean M. Burke who contributed to
-Math::Random::MT as this module is simply a translation.
+Math::Random::MT as this module is mostly a translation.
 
 =head1 LICENSE
 
 This package is free software and is provided "as is" without express or
 implied warranty. It may be used, redistributed and/or modified under the
-terms of the Artistic License 2.0. A copy is include in this distribution.
-
+terms of the Artistic License 2.0. A copy is included in this distribution.
 
 =cut
