@@ -20,3 +20,4 @@ t/pod.t
 t/pod_coverage.t
 t/spelling.t
 t/validate.pl
+META.yml                                 Module meta-data (added by MakeMaker)

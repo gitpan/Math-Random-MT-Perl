@@ -5,7 +5,7 @@ use warnings;
 use Time::HiRes qw(gettimeofday); # standard in Perl >= 5.8
 
 use vars qw($VERSION);
-$VERSION = 1.06;
+$VERSION = 1.07;
 
 my $N = 624;
 my $M = 397;
@@ -67,18 +67,14 @@ sub srand {
 }
 
 sub _rand_seed {
-    # Create a random seed using Perl's builtin random number generator system
     my ($self) = @_;
-    # 1/ Seed Perl's srand() with a temporary random seed that varies quickly
-    # in time so that no two identical seeds are obtained if several seeds are
-    # automatically generated in a short time interval
-    my $tmp_seed = (gettimeofday)[1]; # time in microseconds
-    CORE::srand($tmp_seed);
-    # 2/ Generate the random seed to use using Perl's builtin rand() (unsigned
-    # 32-bit integer)
-    my $max = int(2**32-1); # Largest unsigned 32-bit integer
-    my $rand_seed = int(CORE::rand($max+1)); # An integer between 0 and $max
-    return $rand_seed;
+
+    # Seed rand with the same gettimeofday-based formula that is
+    # used in Perl 5.14, and return an integer between 0 and 2**32-1.
+
+    my ($s, $u) = gettimeofday;
+    CORE::srand(1000003*$s+3*$u);
+    return int(CORE::rand(2**32));
 }
 
 # Note that we need to use integer some of the time to force integer overflow
@@ -213,11 +209,11 @@ words the maximum return value from rand will always be slightly less than the
 argument - it will never equal that argument. Only the first 10 digits of the
 returned float are mathematically significant.
 
-This module implements the same pseudorandom number generator found in
-Math::Random::MT (implemented in C/XS). Their output is identical but their
-interface may be slightly different.
+Math::Random::MT::Perl implements the same pseudorandom number generator found
+in Math::Random::MT (implemented in C/XS): their interface and output should be
+identical.
 
-=head2 Object-oriented functions
+=head2 Object-oriented interface
 
 =over
 
@@ -243,7 +239,7 @@ Retrieves the value of the seed used.
 
 =back
 
-=head2 Function-oriented functions
+=head2 Functional interface
 
 =over
 
@@ -276,19 +272,31 @@ Math::Random::MT
 
 http://www.math.keio.ac.jp/~matumoto/emt.html
 
+=head1 BUGS
+
+Please report bugs at L<http://rt.cpan.org/Dist/Display.html?Name=Math-Random-MT-Perl>.
+
+The latest development code can be obtained from the git repository
+L<git://github.com/fangly/Math-Random-MT-Perl.git>.
+
 =head1 AUTHOR
 
-(c) Dr James Freeman 2000-08 <airmedical [at] gmail [dot] com>
-All rights reserved.
+Dr James Freeman <airmedical [at] gmail [dot] com>
 
-=head2 Credits
+=head1 MAINTAINER
+
+Florent Angly <florent.angly@gmail.com>
+
+=head1 CREDITS
 
 almut from perlmonks for 64 bit debug and fix.
 
 Abhijit Menon-Sen, Philip Newton and Sean M. Burke who contributed to
 Math::Random::MT as this module is mostly a translation.
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
+
+(c) Dr James Freeman 2000-08. All rights reserved.
 
 This package is free software and is provided "as is" without express or
 implied warranty. It may be used, redistributed and/or modified under the
