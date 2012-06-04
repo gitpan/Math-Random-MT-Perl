@@ -44,5 +44,8 @@ Revision history for Perl extension Math::Random::MT::Perl.
 
 1.08 Mon May 28 2012
     - synchronised the autoseeding mechanism with that of Math::Random::MT that
-      is more elegant and reliable on different platforms
+      is more elegant and portable
+
+1.09 Mon Jun 4 2012
+    - added the irand() function to draw random integers, as in Math::Random::MT
 
