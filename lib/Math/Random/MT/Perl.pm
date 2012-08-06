@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION);
-$VERSION = 1.09;
+$VERSION = 1.10;
 
 my $N = 624;
 my $M = 397;
@@ -67,7 +67,7 @@ sub set_seed {
     $self->{seed} = undef;
     @seeds > 1 ? $self->_mt_setup_array(@seeds) :
                  $self->_mt_init_seed($seeds[0]||_rand_seed());
-    return 1;
+    return $self->{seed};
 }
 
 
@@ -252,7 +252,8 @@ automatically seeded with a random seed.
 
 =item set_seed()
 
-Seeds the generator. It takes the same arguments as I<new()>.
+Seeds the generator and returns the seed used. It takes the same arguments as
+I<new()>.
 
 =item get_seed()
 
