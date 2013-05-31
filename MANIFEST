@@ -21,6 +21,6 @@ t/kwalitee.t
 t/pod.t
 t/pod_coverage.t
 t/spelling.t
-t/validate.pl
+t/validate.t
 META.yml                                 Module YAML meta-data (added by MakeMaker)
 META.json                                Module JSON meta-data (added by MakeMaker)

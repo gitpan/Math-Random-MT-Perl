@@ -1,20 +1,15 @@
-use Test;
+use strict;
+use warnings;
+use Test::More;
 
-#$ENV{RELEASE_TESTING}++;
-
-eval "use Test::Pod 1.00";
+eval { require Test::Pod; };
 
 if ($@) {
-    plan tests => 1;
-    skip("Test::Pod 1.00 required for testing POD");
+   plan skip_all => 'Test::Pod not available';
+} else {
+   Test::Pod->import();
+   my @poddirs = qw(lib ../lib);
+   all_pod_files_ok(all_pod_files( @poddirs ));
 }
-else {
-    if ( $ENV{RELEASE_TESTING} ) {
-        my @poddirs = qw(lib ../lib);
-        all_pod_files_ok(all_pod_files( @poddirs ));
-    }
-    else {
-        plan tests => 1;
-        skip( "Author only private tests" );
-    }
-}
+
+done_testing();

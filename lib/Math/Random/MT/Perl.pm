@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION);
-$VERSION = 1.10;
+$VERSION = 1.11;
 
 my $N = 624;
 my $M = 397;
@@ -258,8 +258,6 @@ I<new()>.
 =item get_seed()
 
 Retrieves the value of the seed used.
-
-=back
 
 =item rand($num)
 
