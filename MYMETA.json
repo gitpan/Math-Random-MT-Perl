@@ -4,7 +4,7 @@
       "Dr James Freeman"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.132140",
    "license" : [
       "artistic_2"
    ],
@@ -38,10 +38,10 @@
             "Test::Number::Delta" : "0",
             "Test::Pod" : "1.00",
             "Test::Pod::Coverage" : "1.00",
-            "Test::Spelling" : "0"
+            "Test::Spelling" : "0.19"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "1.11"
+   "version" : "1.12"
 }

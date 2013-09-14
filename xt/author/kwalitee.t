@@ -3,8 +3,9 @@ use warnings;
 use Test::More;
 use Cwd;
 
-my $chdir = 0;  # for when tests are run from t/
-if ( cwd() =~ m/t$/ ) {
+my $chdir = 0;  # for when tests are run from xt/author
+if ( cwd() =~ m/author$/ ) {
+    chdir '..';
     chdir '..';
     $chdir++;
 }
@@ -18,6 +19,6 @@ if ($@) {
    # No META.yml check, because it is generated when building the distro
 }
 
-chdir 't' if $chdir;  # back to t/
+chdir 'xt/author' if $chdir;  # back to xt/author
 
 # do not done_testing();
