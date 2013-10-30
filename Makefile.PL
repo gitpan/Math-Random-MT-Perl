@@ -27,8 +27,9 @@ sub get_opt_test_mods {
       'Test::Kwalitee'      =>  0,
       'Test::Pod'           => '1.00',
       'Test::Pod::Coverage' => '1.00',
-      'Test::Spelling'      => '0.19',
+      'Test::Spelling'      =>  0,
    );
+
    while (my ($module, $version) = each %opt_modules) {
       eval "require $module;";
       if (! $@) {

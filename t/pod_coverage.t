@@ -5,9 +5,8 @@ use Cwd;
 
 my $ALSO_PRIVATE = [ ];
 
-my $chdir = 0;  # for when tests are run from xt/author
-if ( cwd() =~ m/author$/ ) {
-    chdir '..';
+my $chdir = 0;  # for when tests are run from t/
+if ( cwd() =~ m/t$/ ) {
     chdir '..';
     $chdir++;
 }
@@ -22,6 +21,6 @@ if ($@) {
                           also_private => $ALSO_PRIVATE } );
 }
 
-chdir 'xt/author' if $chdir;  # back to xt/author
+chdir 't' if $chdir;  # back to t/
 
 done_testing();

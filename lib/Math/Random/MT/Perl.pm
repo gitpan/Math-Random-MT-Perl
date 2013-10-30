@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION);
-$VERSION = 1.12;
+$VERSION = 1.13;
 
 my $N = 624;
 my $M = 397;
@@ -225,7 +225,7 @@ Pure Perl implementation of the Mersenne Twister algorithm. Mersenne Twister is
 a 32 bit pseudorandom number generator developed by Makoto Matsumoto and Takuji
 Nishimura. The algorithm is characterised by a very uniform distribution but is
 not cryptographically secure. What this means in real terms is that it is fine
-for modelling but no good for crypto.
+for modeling but no good for crypto.
 
 Internally, unsigned 32 bit integers are used. The range of possible values for
 such integers is 0 .. 4,294,967,295 (0..2**32-1). The generator takes a random

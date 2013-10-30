@@ -9,14 +9,13 @@ if ($@) {
 } else {
    Test::Spelling->import();
    add_stopwords(<DATA>);
-   my @poddirs = qw(lib ../../lib);
+   my @poddirs = qw(lib ../lib);
    all_pod_files_spelling_ok(all_pod_files( @poddirs ));
 }
 
 done_testing;
 
 __DATA__
-C
 CGI
 CPAN
 GPL
@@ -26,8 +25,6 @@ DWIM
 OO
 RTFM
 RTFS
-Dr
-Sean
 James
 Freeman
 behaviour
@@ -35,4 +32,4 @@ Florent
 Angly
 Matsumoto
 cryptographically
-git
+

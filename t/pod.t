@@ -8,13 +8,8 @@ if ($@) {
    plan skip_all => 'Test::Pod not available';
 } else {
    Test::Pod->import();
-   my @poddirs = qw(lib ../../lib);
-   for my $poddir (@poddirs) {
-      if (-d $poddir) {
-         all_pod_files_ok(all_pod_files($poddir));
-         last;
-      }
-   }
+   my @poddirs = qw(lib ../lib);
+   all_pod_files_ok(all_pod_files( @poddirs ));
 }
 
 done_testing();
